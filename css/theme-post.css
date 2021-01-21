@@ -254,6 +254,7 @@ table tr:nth-last-child(1) td {
 }
 
 .header span.header-link {
+  background-color : #FFF5B8;
   height: 32px;
   line-height: 38px;
   display: inline-block;

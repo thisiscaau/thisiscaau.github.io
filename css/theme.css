@@ -413,7 +413,6 @@ header#user_top {
 }
 
 header#user_top h2 {
-    text-transform: uppercase;
     font-size: 30px;
     line-height: 38px;
     color: #000;

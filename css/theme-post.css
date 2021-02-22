@@ -53,6 +53,7 @@ and (max-device-width : 736px) {
 }
 
 html, body {
+    background-color : #f5f4f0;
     margin: 0; padding: 0;
     font-size: 16px;
     font-weight: 100;

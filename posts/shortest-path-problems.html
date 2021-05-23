@@ -1,0 +1,202 @@
+<html>
+    <head>
+        <title>Problems related to Shortest Path Finding | thisiscaau </title>
+        <meta charset="utf-8">
+        <meta http-equiv="content-type" content="text/html;"><meta name=viewport content="initial-scale=1.0 maximum-scale=1.0">
+        <meta property='og:image' content='https://thefullsnack.com/img/default.jpg'>
+        <link rel="icon" type="image/png" sizes="32x32" href="../img/avatar-32x32.jpg">
+        <link rel="icon" type="image/png" sizes="16x16" href="../img/avatar-16x16.jpg">
+        <link rel="manifest" href="../manifest.json">
+        <link rel="mask-icon" href="../safari-pinned-tab.svg" color="#5bbad5">
+        <meta name="theme-color" content="#ffffff">
+        <link href="https://fonts.googleapis.com/css?family=Inconsolata:400,700&amp;subset=latin-ext,vietnamese" rel="stylesheet">
+        <link href="../css/theme-post.css" rel="stylesheet" type="text/css">
+        <link rel="stylesheet" href="../css/highlight/tomorrow.css">
+        <link rel="stylesheet" href="../css/fontello.css">
+        <link rel="stylesheet" href="../emoji/css/messenger.min.css">
+        <link rel="stylesheet" href="../emoji/css/thinking.ext.css">
+        <script src="../js/highlight.pack.js"></script>
+        <script src="../js/autosizing.js"></script>
+        <script src="../js/fetch.js"></script>
+        <script>
+        hljs.initHighlightingOnLoad();
+        </script>
+    </head>
+    <body>
+        <div class="header">
+          <a href="/"><span class="header-link">#thisiscaau</span></a> 
+
+          <a class="subscribe right" href="http://eepurl.com/gfsHkH" rel="noopener noreferrer" target="blank">Theo dõi blog này</a>
+        </div>
+        <div class="container">
+            <div class="main">
+                <h1>Problems related to Shortest Path Finding</h1>
+                <p>Although there are only a few algorithms for shortest path finding,namely BFS,SPFA
+or Dijkstra,its applications and problemset is surprisingly vast...</p>
+<p><a href="https://ocw.mit.edu/courses/electrical-engineering-and-computer-science/6-006-introduction-to-algorithms-fall-2011/lecture-notes/">MIT's Shortest Path - Lecture 15 - 17</a></p>
+<p>Shortest Path Problemset :</p>
+<ul>
+<li><a href="#artful-painting">Artful Painting - CF102394A</a></li>
+<li><a href="#apio-2015-skyscraper">APIO 2015 - Skyscraper</a></li>
+<li>Codeforces 102394H</li>
+<li>Codeforces 1209F</li>
+<li>AIIO 2020 - Metropole</li>
+</ul>
+<h2><a href="#basic-implementation" aria-hidden="true" class="anchor" id="basic-implementation"></a>Basic Implementation</h2>
+<ol>
+<li>Dijkstra
+<em>Does not support negative weight edges</em></li>
+</ol>
+<pre><code class="language-c++">priority_queue&lt;ii,vii,greater&lt;ii&gt;&gt; pq; // can be a struct or sth
+pq.push(mp(0,src));
+
+while (!pq.empty()){
+	ii nw = pq.top(); pq.pop();
+	if (d[nw.se] != nw.fi) continue;
+	for (ii e : g[nw.se]){
+		ll nxt = e.se,w = e.fi;
+		if (nw.fi + w &lt; d[nxt]){
+			d[nxt] = nw.fi + w;
+			pq.push(mp(d[nxt],nxt));
+		}
+	}
+}
+</code></pre>
+<ol start="2">
+<li>SPFA</li>
+</ol>
+<pre><code class="language-c++">// SPFA implementation
+queue&lt;ll&gt; q;
+ll dist[MAXN]; // set dist to be inf
+bool in_queue[MAXN];
+
+dist[src] = 0; in_queue[src] = true;
+q.push(src);
+
+while (!q.empty()){
+	ll u = q.front(); q.pop(); in_queue[u] = false;
+	for (ii e : g[u]){
+		ll v = e.fi,w = e.se;
+		if (dist[u] + w &lt; dist[v]){
+			dist[v] = dist[u] + w;
+			if (!in_queue[v]){
+				q.push(v);
+				in_queue[v] = true;
+			}
+		}
+	}
+}
+</code></pre>
+<p>Though this algorithm runs in O(kE) where k depends on the graph, through
+performance experiments, it has proved to be as fast as Dijkstra Algorithm.
+SPFA can deal with negative cycle and can be modified to detect negative cycle.</p>
+<p>To check is graph exist a negative cycle, we initialize a &quot;counter&quot; array.If there
+exits a node which appear in the queue more than V - 1 times, than there is a
+negative cycle.</p>
+<h2><a href="#artful-painting" aria-hidden="true" class="anchor" id="artful-painting"></a>Artful Painting</h2>
+<p>It's essential to know that problems involving system of inequalities
+can be solved by using shortest-path finding algorithms !</p>
+<p><em>Furthur information</em></p>
+<p><a href="https://web.stanford.edu/class/cs97si/07-shortest-path-algorithms.pdf">Stanford's lecture</a></p>
+<p><a href="https://www.researchgate.net/publication/225417333_Solving_Systems_of_Difference_Constraints_Incrementally">Some random paper on Researchgate</a></p>
+<p><a href="https://www.youtube.com/watch?v=Z7l-sdWIIeg">Random Youtube video</a></p>
+<p><a href="https://cs.stackexchange.com/questions/11445/solving-system-of-linear-inequalities">With additional requirement - Stackexchange</a></p>
+<h3><a href="#solution" aria-hidden="true" class="anchor" id="solution"></a>Solution</h3>
+<p>We can see that if we found an answer,painting more doesnt change the state.
+That is to say, the more we paint the more we are &quot;wasting&quot;. Therefore, we can
+apply binary search on this problem. However, we havent managed to find a way to verify an answer.
+As above, this issue can be solved by using SPFA.All of the requirements
+can be written as :</p>
+<pre><code class="language-text">- pre[r] - pre[l - 1] &gt;= k (or pre[r] - k &gt;= pre[l - 1])
+- pre[r] - pre[l - 1] &lt;= x - k (or pre[l - 1] + x - k &gt;= pre[r])
+- pre[i] + 0 &gt;= pre[i - 1]
+- pre[n] = x
+- pre[0] = 0
+</code></pre>
+<p>This solution is based on the inequality :</p>
+<pre><code class="language-text">	dist(u) + w &gt;= dist(v) holds
+	unless there is a negative cycle
+	where dist(x) is the min-dist from 0 to x
+
+	That is to say
+	For every edge u -&gt; v
+	if dist(v) &gt; dist(u) + w
+</code></pre>
+<p>In conclusion, build a directed graph -&gt; check if exist negative cycle.</p>
+<pre><code class="language-c++">	// spfa
+	bool spfa(){
+		bool in_queue[3005];
+		ll cnt[3005],dist[3005];
+		queue&lt;ll&gt; q;
+		for (int i = 0 ; i &lt;= n ; i++){
+			cnt[i] = 0; in_queue[i] = false;
+			dist[i] = inf;
+		}
+		dist[0] = 0; in_queue[0] = true; cnt[0] = 1;
+		q.push(0);
+		while (!q.empty()){
+			ll u = q.front(); q.pop(); in_queue[u] = false;
+			for (ii e : g[u]){
+				ll v = e.fi,w = e.se;
+				if (w + dist[u] &lt; dist[v]){
+					dist[v] = w + dist[u];
+					if (dist[v] &lt; 0) return false;
+					if (!in_queue[v]){
+						in_queue[v] = true;
+						cnt[v]++;
+						q.push(v);
+					}
+					if (cnt[v] &gt; n) return false;
+				}
+			}
+		}
+		return true;
+	}
+	// binary search check
+	bool check (ll mid){
+		for (int i = 0 ; i &lt;= n ; i++){
+			g[i].clear();
+		}
+		for (int i = 1 ; i &lt;= m1 ; i++){
+			// pre[r] - pre[l - 1] &gt;= k
+			// pre[r] - k &gt;= pre[l - 1]
+			g[r[i]].pb(mp(l[i] - 1,-k[i]));
+		}
+		for (int i = 1 ; i &lt;= m2 ; i++){
+			// pre[r] - pre[l - 1] &lt;= mid - k
+			g[l[i + m1] - 1].pb(mp(r[i + m1],mid - k[i + m1]));
+		}
+		// other base edges
+		g[0].pb(mp(n,mid));
+		g[n].pb(mp(0,-mid));
+
+		for (int i = 1 ; i &lt;= n ; i++){
+			g[i - 1].pb(mp(i,1));
+			g[i].pb(mp(i - 1,0));
+		}
+		return spfa();
+	}
+</code></pre>
+<p>Another interesting observation you should know is that : if we run Bellman-Ford on some &quot;Supernode&quot; with edges to other nodes w = 0 then it will minimizes the difference :
+max(xi) - min(xi).</p>
+<p>If we want to maximize it, just run Bellman-Ford on node x1 !</p>
+<p>Similar problems : POJ 1201,POJ 3169</p>
+<h2><a href="#apio-2015-skyscraper" aria-hidden="true" class="anchor" id="apio-2015-skyscraper"></a>APIO 2015 Skyscraper</h2>
+
+                <div class='other-tags'><b>Tags:</b> <a class='topic-tag' href='/tags/algorithm,collective.html'>algorithm,collective</a></div>
+            </div>    
+        </div>
+
+        
+        <script type="text/javascript" async src="../js/MathJax/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+        <script type="text/x-mathjax-config">
+        MathJax.Hub.Config({
+          tex2jax: {
+            inlineMath: [['$','$'], ['\\(','\\)']],
+            skipTags: ["script","noscript","style","textarea", "code"],
+            ignoreClass: ["disqus_thread"]
+          }
+        });
+        </script>
+    </body>
+</html>

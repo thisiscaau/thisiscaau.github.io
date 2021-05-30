@@ -44,15 +44,15 @@ solve(mid + 1,r).
 
 As the following illustration describes...
 
-![original](./posts/img/1483C/ori.png)
+![original](./img/1483C/ori.PNG)
 
-![first](./posts/img/1483C/one.png)
+![first](./img/1483C/one.PNG)
 
-![second](./posts/img/1483C/two.png)
+![second](./img/1483C/two.PNG)
 
-![third](./posts/img/1483C/three.png)
+![third](./img/1483C/three.PNG)
 
-![fourth](./posts/img/1483C/four.png)
+![fourth](./img/1483C/four.PNG)
 
 ### Implementation
 Given the divide and conquer concept of this problem, it should be easy to implement this problem.

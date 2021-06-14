@@ -100,6 +100,34 @@ Total time complexity : O(n log n)
 	}
 ```
 
-## Problem 2 : Codeforces 
-tldr : Range update/sum but harder,involving problems related
-to powers.
+## Processing Addition and Multiplication in Lazy Propaganda
+
+```c++
+	void apply (ll node,ll tl,ll tr){
+		ll len = tr - tl + 1;
+		ll lf = len - len/2,rt = len / 2;
+
+		if (mul[node] != 1){
+			st[node << 1] *= mul[node];
+			mul[node << 1] *= mul[node];
+			add[node << 1] *= mul[node];
+
+			st[node << 1 | 1] *= mul[node];
+			mul[node << 1 | 1] *= mul[node];
+			add[node << 1 | 1] *= mul[node];
+
+			mul[node] = 1; 
+		}
+
+		if (add[node] != 0){
+			st[node << 1] += lf * add[node];
+			st[node << 1 | 1] += rt * add[node];
+
+			add[node << 1] += add[node];
+			add[node << 1 | 1] += add[node];
+
+			add[node] = 0;
+		}
+		return;
+	}
+```

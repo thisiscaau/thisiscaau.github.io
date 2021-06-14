@@ -112,9 +112,35 @@ a monotonic stack in O(n)</p>
 		lazy[node] = {0,0,0};
 	}
 </code></pre>
-<h2><a href="#problem-2--codeforces" aria-hidden="true" class="anchor" id="problem-2--codeforces"></a>Problem 2 : Codeforces</h2>
-<p>tldr : Range update/sum but harder,involving problems related
-to powers.</p>
+<h2><a href="#processing-addition-and-multiplication-in-lazy-propaganda" aria-hidden="true" class="anchor" id="processing-addition-and-multiplication-in-lazy-propaganda"></a>Processing Addition and Multiplication in Lazy Propaganda</h2>
+<pre><code class="language-c++">	void apply (ll node,ll tl,ll tr){
+		ll len = tr - tl + 1;
+		ll lf = len - len/2,rt = len / 2;
+
+		if (mul[node] != 1){
+			st[node &lt;&lt; 1] *= mul[node];
+			mul[node &lt;&lt; 1] *= mul[node];
+			add[node &lt;&lt; 1] *= mul[node];
+
+			st[node &lt;&lt; 1 | 1] *= mul[node];
+			mul[node &lt;&lt; 1 | 1] *= mul[node];
+			add[node &lt;&lt; 1 | 1] *= mul[node];
+
+			mul[node] = 1; 
+		}
+
+		if (add[node] != 0){
+			st[node &lt;&lt; 1] += lf * add[node];
+			st[node &lt;&lt; 1 | 1] += rt * add[node];
+
+			add[node &lt;&lt; 1] += add[node];
+			add[node &lt;&lt; 1 | 1] += add[node];
+
+			add[node] = 0;
+		}
+		return;
+	}
+</code></pre>
 
                 <div class='other-tags'><b>Tags:</b> <a class='topic-tag' href='/tags/algorithm,data structure.html'>algorithm,data structure</a></div>
             </div>    

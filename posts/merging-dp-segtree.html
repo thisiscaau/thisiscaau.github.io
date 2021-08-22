@@ -1,0 +1,78 @@
+<html>
+    <head>
+        <title>Merging DP on Segment Tree | thisiscaau </title>
+        <meta charset="utf-8">
+        <meta http-equiv="content-type" content="text/html;"><meta name=viewport content="initial-scale=1.0 maximum-scale=1.0">
+        <meta property='og:image' content='https://thefullsnack.com/img/default.jpg'>
+        <link rel="icon" type="image/png" sizes="32x32" href="../img/avatar-32x32.jpg">
+        <link rel="icon" type="image/png" sizes="16x16" href="../img/avatar-16x16.jpg">
+        <link rel="manifest" href="../manifest.json">
+        <link rel="mask-icon" href="../safari-pinned-tab.svg" color="#5bbad5">
+        <meta name="theme-color" content="#ffffff">
+        <link href="https://fonts.googleapis.com/css?family=Inconsolata:400,700&amp;subset=latin-ext,vietnamese" rel="stylesheet">
+        <link href="../css/theme-post.css" rel="stylesheet" type="text/css">
+        <link rel="stylesheet" href="../css/highlight/tomorrow.css">
+        <link rel="stylesheet" href="../css/fontello.css">
+        <link rel="stylesheet" href="../emoji/css/messenger.min.css">
+        <link rel="stylesheet" href="../emoji/css/thinking.ext.css">
+        <script src="../js/highlight.pack.js"></script>
+        <script src="../js/autosizing.js"></script>
+        <script src="../js/fetch.js"></script>
+        <script>
+        hljs.initHighlightingOnLoad();
+        </script>
+    </head>
+    <body>
+        <div class="header">
+          <a href="/"><span class="header-link">#thisiscaau</span></a> 
+
+          <a class="subscribe right" href="http://eepurl.com/gfsHkH" rel="noopener noreferrer" target="blank">Theo dõi blog này</a>
+        </div>
+        <div class="container">
+            <div class="main">
+                <h1>Merging DP on Segment Tree</h1>
+                <h2><a href="#codeforces-1380f" aria-hidden="true" class="anchor" id="codeforces-1380f"></a>Codeforces 1380F</h2>
+<p>We realise that the maximum value of the sum of 2 digits is 18 - which only consists of 2
+digits. Therefore,we can use DP for this problem. There are 2 approach for this problem.</p>
+<h3><a href="#solution-1--matrix-multiplication" aria-hidden="true" class="anchor" id="solution-1--matrix-multiplication"></a>Solution 1 : Matrix Multiplication</h3>
+<pre><code class="language-text">dp[i] - the number of expression for the prefix i 
+
+dp[i] = (a[i] + 1) * dp[i - 1] + (a[i - 1] == 1) * (9 - a[i]) * dp[i - 2];
+
+dp[0] = 1; dp[-1] = 1;
+
+We can easily calculate this using the matrix multiplication in each segment tree node.
+By maintaining a &quot;1 * 2&quot; matrix [dp[i]  dp[i - 1]],it's not hard to find the recursive
+occurence.
+
+</code></pre>
+<h3><a href="#solution-2--regular-dp-and-merging-function" aria-hidden="true" class="anchor" id="solution-2--regular-dp-and-merging-function"></a>Solution 2 : Regular DP and Merging function</h3>
+<pre><code class="language-text">Consider the current node of range [L..R]
+
+dp[i][j] = the number of expression for the range [L+i...R - j]
+
+i and j in range [0...1]
+
+We just merge everything together, and there is only one thing to keep in mind is that
+for its simplicity in merging , for dp[i][j] if (R - j &lt; L + i) we set dp[i][j] = 1.
+
+Submission : https://codeforces.com/contest/1380/submission/120354813.
+</code></pre>
+
+                <div class='other-tags'><b>Tags:</b> <a class='topic-tag' href='/tags/algorithm,data structure.html'>algorithm,data structure</a></div>
+            </div>    
+        </div>
+
+        
+        <script type="text/javascript" async src="../js/MathJax/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+        <script type="text/x-mathjax-config">
+        MathJax.Hub.Config({
+          tex2jax: {
+            inlineMath: [['$','$'], ['\\(','\\)']],
+            skipTags: ["script","noscript","style","textarea", "code"],
+            ignoreClass: ["disqus_thread"]
+          }
+        });
+        </script>
+    </body>
+</html>

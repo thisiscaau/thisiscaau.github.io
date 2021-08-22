@@ -22,6 +22,7 @@ We can easily calculate this using the matrix multiplication in each segment tre
 By maintaining a "1 * 2" matrix [dp[i]  dp[i - 1]],it's not hard to find the recursive
 occurence.
 
+Further implementation : https://www.luogu.com.cn/problem/solution/CF1380F
 ```
 
 ### Solution 2 : Regular DP and Merging function

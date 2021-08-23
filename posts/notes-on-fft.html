@@ -1,0 +1,189 @@
+<html>
+    <head>
+        <title>Fast Fourier Transform | thisiscaau </title>
+        <meta charset="utf-8">
+        <meta http-equiv="content-type" content="text/html;"><meta name=viewport content="initial-scale=1.0 maximum-scale=1.0">
+        <meta property='og:image' content='https://thefullsnack.com/img/default.jpg'>
+        <link rel="icon" type="image/png" sizes="32x32" href="../img/avatar-32x32.jpg">
+        <link rel="icon" type="image/png" sizes="16x16" href="../img/avatar-16x16.jpg">
+        <link rel="manifest" href="../manifest.json">
+        <link rel="mask-icon" href="../safari-pinned-tab.svg" color="#5bbad5">
+        <meta name="theme-color" content="#ffffff">
+        <link href="https://fonts.googleapis.com/css?family=Inconsolata:400,700&amp;subset=latin-ext,vietnamese" rel="stylesheet">
+        <link href="../css/theme-post.css" rel="stylesheet" type="text/css">
+        <link rel="stylesheet" href="../css/highlight/tomorrow.css">
+        <link rel="stylesheet" href="../css/fontello.css">
+        <link rel="stylesheet" href="../emoji/css/messenger.min.css">
+        <link rel="stylesheet" href="../emoji/css/thinking.ext.css">
+        <script src="../js/highlight.pack.js"></script>
+        <script src="../js/autosizing.js"></script>
+        <script src="../js/fetch.js"></script>
+        <script>
+        hljs.initHighlightingOnLoad();
+        </script>
+    </head>
+    <body>
+        <div class="header">
+          <a href="/"><span class="header-link">#thisiscaau</span></a> 
+
+          <a class="subscribe right" href="http://eepurl.com/gfsHkH" rel="noopener noreferrer" target="blank">Theo dõi blog này</a>
+        </div>
+        <div class="container">
+            <div class="main">
+                <h1>Fast Fourier Transform</h1>
+                <h2><a href="#template" aria-hidden="true" class="anchor" id="template"></a>Template</h2>
+<pre><code class="language-c++">// FFT Template
+
+const int   N   = 1 &lt;&lt; 18; // depends on the modulo
+const int   mod = 998244353; // for modulo like 1e9 + 7,use CRT
+
+/* FFT section */
+void add(int &amp;a,int b)  {
+    a += b;
+    if (a &gt;= mod) a -= mod;
+}
+void sub(int &amp;a,int b)  {
+    a -= b;
+    if (a &lt; 0) a += mod;
+}
+int mul(int a,int b)    {
+    return  1ll * a * b % mod;
+}
+
+int binpow (int a,int b){
+    int res = 1;
+    while (b){
+        if (b &amp; 1) res = mul(res,a);
+        a = mul(a,a);
+        b &gt;&gt;= 1;
+    }
+    return res;
+}
+
+int inv (int a){
+    return binpow(a,mod - 2);
+}
+
+typedef vector&lt;int&gt; poly;
+int W[N],I[N];
+
+void init_fft(){
+    for (int i = 0 ; i &lt; N ; i++){
+        int exp = (mod / 2 / N) * i;
+
+        W[i] = binpow(3,exp);
+        I[i] = binpow(3,mod - exp - 1);
+    }
+
+}
+
+void FFT (poly &amp;a,bool invert){
+    int n = a.size();
+    for (int i = 0 ; i &lt; n ; i++){
+        int x = i;
+        for (int j = 0 ,k = log2(n) - 1 ; j &lt; k ; j++,k--){
+            if ((x &gt;&gt; j &amp; 1) != (x &gt;&gt; k &amp; 1)){
+                x ^= (1 &lt;&lt; j);
+                x ^= (1 &lt;&lt; k);
+            }
+        }
+        if (i &lt; x) swap(a[i],a[x]);
+    }
+
+    for (int k = 1 ; k &lt; n ; k &lt;&lt;= 1){
+        for (int i = 0 ; i &lt; n ; i += k + k){
+            int idx = 0;
+            int gap = N / k;
+
+            for (int j = 0 ; j &lt; k ; j++,idx += gap){
+                int x = a[i + j];
+                int y;
+                if (invert){
+                    y = mul(a[i + j + k],I[idx]);
+                }
+                else {
+                    y = mul(a[i + j + k],W[idx]);
+                }
+                add(a[i + j],y);
+                a[i + j + k] = x;
+                sub(a[i + j + k],y);
+            }
+        }
+    }
+
+    if (invert){
+        int m = inv(n);
+        for (int &amp;x : a){
+            x = mul(x,m);
+        }
+    }
+}
+
+poly operator * (poly a,poly b){
+    int n = a.size() + b.size() - 1;
+    int m = (2 &lt;&lt; (int)(log2(n)));
+
+    a.resize(m);
+    FFT(a,0);
+    b.resize(m);
+    FFT(b,0);
+
+    for (int i = 0 ; i &lt; m ; i++){
+        a[i] = mul(a[i],b[i]);
+    }
+
+    FFT(a,1);
+    a.resize(n);
+    return a;
+}
+</code></pre>
+<p>To use the above template just call the <code>init_tft()</code> function and use multiplication
+operation as above.</p>
+<h2><a href="#application" aria-hidden="true" class="anchor" id="application"></a>Application</h2>
+<h3><a href="#exercise-1--atcoder-abc196f" aria-hidden="true" class="anchor" id="exercise-1--atcoder-abc196f"></a>Exercise 1 : Atcoder ABC196F</h3>
+<p>Link : <a href="https://atcoder.jp/contests/abc196/tasks/abc196_f">https://atcoder.jp/contests/abc196/tasks/abc196_f</a>.</p>
+<p>Brute-force solution</p>
+<pre><code class="language-c++">	ll ans = oo;
+	for (int i = 0 ; i &lt; s.size() &amp;&amp; i + t.size() - 1 &lt; s.size() ; i++){
+		ll cost = 0;
+		for (int j = 0 ; j &lt; t.size() ; j++){
+			if (t[j] != s[i]) cost++;
+		}
+		ans = min(ans,cost);
+	}
+	// Time complexity O(|S| * |T|)
+</code></pre>
+<p>We define cost[i] as the cost if we start from index i.
+We can use FFT to reduce the time complexity to O((s + t) * log(s + t)).
+Detailed Solution :</p>
+<p><img src="./img/abc196f.PNG" alt="abc196f" /></p>
+<p>Submission : <a href="https://atcoder.jp/contests/abc196/submissions/25284257">https://atcoder.jp/contests/abc196/submissions/25284257</a>.</p>
+<h3><a href="#exercise-2--rcc2015---round-1---hash" aria-hidden="true" class="anchor" id="exercise-2--rcc2015---round-1---hash"></a>Exercise 2 : RCC2015 - Round 1 - Hash</h3>
+<p>Link : <a href="http://www.russiancodecup.ru/en/tasks/round/35/E/">http://www.russiancodecup.ru/en/tasks/round/35/E/</a>.</p>
+<pre><code class="language-text">DP formulation :
+dp[i][j] the number of segments with length 2^i have modulo j.
+
+dp[i][j] -&gt; dp[i + 1][j * 2^i + k] += dp[i][j] * dp[i][k].
+
+Time complexity : O(M^2 * log)
+
+=&gt; We can use FFT to optimize it into O(M * log * log).
+</code></pre>
+
+                <div class='other-tags'><b>Tags:</b> <a class='topic-tag' href='/tags/algorithm,math.html'>algorithm,math</a></div>
+            </div>    
+        </div>
+
+        
+        <script type="text/javascript" async src="../js/MathJax/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+        <script type="text/x-mathjax-config">
+        MathJax.Hub.Config({
+          tex2jax: {
+            inlineMath: [['$','$'], ['\\(','\\)']],
+            skipTags: ["script","noscript","style","textarea", "code"],
+            ignoreClass: ["disqus_thread"]
+          }
+        });
+        </script>
+    </body>
+</html>

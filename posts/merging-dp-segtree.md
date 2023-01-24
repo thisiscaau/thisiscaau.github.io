@@ -1,6 +1,6 @@
 ---
 title: Merging DP on Segment Tree
-published: true
+published: false
 date: 2020-08-21 23:59:59
 tags: algorithm,data structure
 description: Collective Notes
